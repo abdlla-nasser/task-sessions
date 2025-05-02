@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "task-sessions",
+    "tasks-sessions": "task-sessions"
+  },
+  "targets": {},
+  "etags": {}
+}
