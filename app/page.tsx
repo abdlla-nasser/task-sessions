@@ -6,6 +6,9 @@ import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firesto
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import TaskDialog from './components/TaskDialog';
+import CategoryDialog from './components/CategoryDialog';
+import EditCategoryDialog from './components/EditCategoryDialog';
+import DeleteCategoryDialog from './components/DeleteCategoryDialog';
 
 interface UserData {
   name: string;
@@ -31,9 +34,15 @@ export default function Home() {
   const [currentDate, setCurrentDate] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
+  // Add these new state variables at the top with other state declarations
+  const [isEditCategoryDialogOpen, setIsEditCategoryDialogOpen] = useState(false);
+  const [isDeleteCategoryDialogOpen, setIsDeleteCategoryDialogOpen] = useState(false);
+  const [selectedCategoryToEdit, setSelectedCategoryToEdit] = useState<string>('');
+  const [selectedCategoryToDelete, setSelectedCategoryToDelete] = useState<string>('');
 
   const router = useRouter();
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
+  const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -112,6 +121,15 @@ export default function Home() {
     );
   }
 
+  const refreshUserData = async () => {
+    if (user) {
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      if (userDoc.exists()) {
+        setUserData(userDoc.data() as UserData);
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen p-[2%] bg-gradient-to-br from-slate-50 to-slate-100">
       <div className="flex flex-row max-w-[1440px] mx-auto gap-[2%] min-h-[calc(100vh-4%)]">
@@ -136,7 +154,7 @@ export default function Home() {
               <h2 className="text-lg font-bold text-white">Categories</h2>
               <button 
                 className="p-1.5 hover:bg-white/10 rounded-lg transition-all duration-300 group"
-                onClick={() => {/* Add new category logic */}}
+                onClick={() => setIsCategoryDialogOpen(true)}
               >
                 <svg className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -145,6 +163,42 @@ export default function Home() {
             </div>
           
             <div className="space-y-1">
+              {/* Default Categories */}
+              <div className="flex justify-between items-center group">
+                <button 
+                  className={`py-2 px-3 rounded-lg transition-all duration-300 flex-grow text-left hover:bg-white/10 text-sm ${
+                    selectedCategory === 'Today' ? 'bg-white/10 font-medium' : 'text-gray-300'
+                  }`}
+                  onClick={() => setSelectedCategory('Today')}
+                >
+                  Today
+                </button>
+              </div>
+              <div className="flex justify-between items-center group">
+                <button 
+                  className={`py-2 px-3 rounded-lg transition-all duration-300 flex-grow text-left hover:bg-white/10 text-sm ${
+                    selectedCategory === 'Tomorrow' ? 'bg-white/10 font-medium' : 'text-gray-300'
+                  }`}
+                  onClick={() => setSelectedCategory('Tomorrow')}
+                >
+                  Tomorrow
+                </button>
+              </div>
+              <div className="flex justify-between items-center group">
+                <button 
+                  className={`py-2 px-3 rounded-lg transition-all duration-300 flex-grow text-left hover:bg-white/10 text-sm ${
+                    selectedCategory === 'This Week' ? 'bg-white/10 font-medium' : 'text-gray-300'
+                  }`}
+                  onClick={() => setSelectedCategory('This Week')}
+                >
+                  This Week
+                </button>
+              </div>
+
+              {/* Divider */}
+              <div className="h-px bg-white/10 my-2"></div>
+
+              {/* User Created Categories */}
               {userData?.categories.map((category, index) => (
                 <div key={index} className="flex justify-between items-center group">
                   <button 
@@ -155,14 +209,30 @@ export default function Home() {
                   >
                     {category}
                   </button>
-                  <button 
-                    className="p-1.5 hover:bg-white/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300"
-                    onClick={() => {/* Edit category logic */}}
-                  >
-                    <svg className="w-3.5 h-3.5 text-gray-400 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                    </svg>
-                  </button>
+                  <div className="flex space-x-1">
+                    <button 
+                      className="p-1.5 hover:bg-white/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300"
+                      onClick={() => {
+                        setSelectedCategoryToEdit(category);
+                        setIsEditCategoryDialogOpen(true);
+                      }}
+                    >
+                      <svg className="w-3.5 h-3.5 text-gray-400 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                      </svg>
+                    </button>
+                    <button 
+                      className="p-1.5 hover:bg-white/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300"
+                      onClick={() => {
+                        setSelectedCategoryToDelete(category);
+                        setIsDeleteCategoryDialogOpen(true);
+                      }}
+                    >
+                      <svg className="w-3.5 h-3.5 text-gray-400 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -240,12 +310,36 @@ export default function Home() {
         </div>
       </div>
 
+      
       {user && (
-        <TaskDialog
-          isOpen={isTaskDialogOpen}
-          onClose={() => setIsTaskDialogOpen(false)}
-          userId={user.uid}
-        />
+        <>
+          <TaskDialog
+            isOpen={isTaskDialogOpen}
+            onClose={() => setIsTaskDialogOpen(false)}
+            userId={user.uid}
+          />
+          <CategoryDialog
+            isOpen={isCategoryDialogOpen}
+            onClose={() => setIsCategoryDialogOpen(false)}
+            userId={user.uid}
+            currentCategories={userData?.categories || []}
+            onCategoryAdded={refreshUserData}
+          />
+          <EditCategoryDialog
+            isOpen={isEditCategoryDialogOpen}
+            onClose={() => setIsEditCategoryDialogOpen(false)}
+            userId={user.uid}
+            categoryToEdit={selectedCategoryToEdit}
+            onCategoryUpdated={refreshUserData}
+          />
+          <DeleteCategoryDialog
+            isOpen={isDeleteCategoryDialogOpen}
+            onClose={() => setIsDeleteCategoryDialogOpen(false)}
+            userId={user.uid}
+            categoryToDelete={selectedCategoryToDelete}
+            onCategoryDeleted={refreshUserData}
+          />
+        </>
       )}
     </div>
   );

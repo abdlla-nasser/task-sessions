@@ -41,7 +41,7 @@ export default function Auth() {
           userId: user.uid,
           name: name,
           email: user.email || '',
-          categories: ['Today', 'Tomorrow', 'This Week'],
+          categories: [],
           taskIds: []
         };
 
@@ -77,7 +77,7 @@ export default function Auth() {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 placeholder="Enter your name"
                 required={!isLogin}
               />
@@ -92,7 +92,7 @@ export default function Auth() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               placeholder="Enter your email"
               required
             />
@@ -106,7 +106,7 @@ export default function Auth() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               placeholder="Enter your password"
               required
             />

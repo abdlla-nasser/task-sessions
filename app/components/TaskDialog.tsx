@@ -58,7 +58,7 @@ export default function TaskDialog({ isOpen, onClose, userId }: TaskDialogProps)
             <input
               type="text"
               required
-              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900"
               value={taskData.title}
               onChange={(e) => setTaskData({...taskData, title: e.target.value})}
               placeholder="Enter task title"
@@ -68,7 +68,7 @@ export default function TaskDialog({ isOpen, onClose, userId }: TaskDialogProps)
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
             <textarea
-              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none text-gray-900"
               rows={3}
               value={taskData.description}
               onChange={(e) => setTaskData({...taskData, description: e.target.value})}
@@ -80,7 +80,7 @@ export default function TaskDialog({ isOpen, onClose, userId }: TaskDialogProps)
             <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
             <input
               type="text"
-              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900"
               value={taskData.category}
               onChange={(e) => setTaskData({...taskData, category: e.target.value})}
               placeholder="Enter category"
@@ -92,7 +92,7 @@ export default function TaskDialog({ isOpen, onClose, userId }: TaskDialogProps)
             <input
               type="date"
               required
-              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900"
               value={taskData.dueDate}
               onChange={(e) => setTaskData({...taskData, dueDate: e.target.value})}
             />
@@ -104,7 +104,7 @@ export default function TaskDialog({ isOpen, onClose, userId }: TaskDialogProps)
               type="number"
               min="1"
               required
-              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900"
               value={taskData.focusSessions}
               onChange={(e) => setTaskData({...taskData, focusSessions: parseInt(e.target.value)})}
             />
