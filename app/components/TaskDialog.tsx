@@ -119,12 +119,11 @@ export default function TaskDialog({ isOpen, onClose, userId, categories = [] }:
                 theme === 'dark'
                   ? 'bg-gray-700 border-gray-600 text-white'
                   : 'bg-gray-50 border-gray-300 text-black'
-              } ${categories.length === 0 ? 'cursor-not-allowed opacity-60' : ''}`}
+              }`}
               value={taskData.category}
               onChange={(e) => setTaskData({...taskData, category: e.target.value})}
-              disabled={categories.length === 0}
             >
-              {/* <option value="Inbox" className={theme === 'dark' ? 'text-white' : 'text-black'}>Inbox</option> */}
+              <option value="">No Category</option>
               {categories.map((category, index) => (
                 <option key={index} value={category} className={theme === 'dark' ? 'text-white' : 'text-black'}>
                   {category}

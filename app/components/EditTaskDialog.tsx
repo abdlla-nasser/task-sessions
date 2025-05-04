@@ -98,7 +98,7 @@ export default function EditTaskDialog({ isOpen, onClose, task, categories, onTa
               value={taskData.category}
               onChange={(e) => setTaskData({...taskData, category: e.target.value})}
             >
-              <option value="Inbox" className="text-black">Inbox</option>
+              <option value="">No Category</option>
               {categories.map((category, index) => (
                 <option key={index} value={category} className="text-black">
                   {category}

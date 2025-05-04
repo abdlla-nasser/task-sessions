@@ -45,6 +45,8 @@ export default function Home() {
   const [isEditTaskDialogOpen, setIsEditTaskDialogOpen] = useState( false );
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState( false );
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState( false );
+  const [isSessionDialogOpen, setIsSessionDialogOpen] = useState( false ); // New state for session dialog
+  const [selectedTaskForSession, setSelectedTaskForSession] = useState<string | null>( null ); // New state for selected task ID
 
   const { theme } = useTheme();
   const router = useRouter();
@@ -213,7 +215,7 @@ export default function Home() {
             >
               <svg className={`w-4 h-4 ${theme === 'dark' ? 'text-gray-400 group-hover:text-white' : 'text-black group-hover:text-gray-700'
                 } transition-colors`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
               <span className="text-sm font-medium">Settings</span>
@@ -237,69 +239,100 @@ export default function Home() {
               {/* Default Categories */}
               <div className="flex justify-between items-center group">
                 <button
-                  className={`py-2 px-3 rounded-lg transition-all duration-300 flex-grow text-left text-sm ${selectedCategory === 'Inbox'
-                      ? 'bg-white/5 font-medium text-black border border-black/50'
-                      : theme === 'dark' ? 'text-gray-300 hover:bg-white/10' : 'text-black hover:bg-black/5'
-                    }`}
-                  onClick={() => setSelectedCategory( 'Inbox' )}
+                  className={`py-2 px-3 rounded-lg transition-all duration-300 flex-grow text-left text-sm ${
+                    selectedCategory === 'Inbox'
+                      ? theme === 'dark'
+                        ? 'bg-white/10 font-medium text-gray-400 border border-blue-400'
+                        : 'bg-white/5 font-medium text-black border border-black/50'
+                      : theme === 'dark'
+                        ? 'text-white hover:bg-white/10'
+                        : 'text-black hover:bg-black/5'
+                  }`}
+                  onClick={() => setSelectedCategory('Inbox')}
                 >
                   Inbox
                 </button>
               </div>
               <div className="flex justify-between items-center group">
                 <button
-                  className={`py-2 px-3 rounded-lg transition-all duration-300 flex-grow text-left text-sm ${selectedCategory === 'Today'
-                      ? 'bg-white/5 font-medium text-black border border-black/50'
-                      : theme === 'dark' ? 'text-gray-300 hover:bg-white/10' : 'text-black hover:bg-black/5'
-                    }`}
-                  onClick={() => setSelectedCategory( 'Today' )}
+                  className={`py-2 px-3 rounded-lg transition-all duration-300 flex-grow text-left text-sm ${
+                    selectedCategory === 'Today'
+                      ? theme === 'dark'
+                        ? 'bg-white/10 font-medium text-gray-400 border border-blue-400'
+                        : 'bg-white/5 font-medium text-black border border-black/50'
+                      : theme === 'dark'
+                        ? 'text-white hover:bg-white/10'
+                        : 'text-black hover:bg-black/5'
+                  }`}
+                  onClick={() => setSelectedCategory('Today')}
                 >
                   Today
                 </button>
               </div>
               <div className="flex justify-between items-center group">
                 <button
-                  className={`py-2 px-3 rounded-lg transition-all duration-300 flex-grow text-left text-sm ${selectedCategory === 'Tomorrow'
-                      ? 'bg-white/5 font-medium text-black border border-black/50'
-                      : theme === 'dark' ? 'text-gray-300 hover:bg-white/10' : 'text-black hover:bg-black/5'
-                    }`}
-                  onClick={() => setSelectedCategory( 'Tomorrow' )}
+                  className={`py-2 px-3 rounded-lg transition-all duration-300 flex-grow text-left text-sm ${
+                    selectedCategory === 'Tomorrow'
+                      ? theme === 'dark'
+                        ? 'bg-white/10 font-medium text-gray-400 border border-blue-400'
+                        : 'bg-white/5 font-medium text-black border border-black/50'
+                      : theme === 'dark'
+                        ? 'text-white hover:bg-white/10'
+                        : 'text-black hover:bg-black/5'
+                  }`}
+                  onClick={() => setSelectedCategory('Tomorrow')}
                 >
                   Tomorrow
                 </button>
               </div>
               <div className="flex justify-between items-center group">
                 <button
-                  className={`py-2 px-3 rounded-lg transition-all duration-300 flex-grow text-left text-sm ${selectedCategory === 'This Week'
-                      ? 'bg-white/5 font-medium text-black border border-black/50'
-                      : theme === 'dark' ? 'text-gray-300 hover:bg-white/10' : 'text-black hover:bg-black/5'
-                    }`}
-                  onClick={() => setSelectedCategory( 'This Week' )}
+                  className={`py-2 px-3 rounded-lg transition-all duration-300 flex-grow text-left text-sm ${
+                    selectedCategory === 'This Week'
+                      ? theme === 'dark'
+                        ? 'bg-white/10 font-medium text-gray-400 border border-blue-400'
+                        : 'bg-white/5 font-medium text-black border border-black/50'
+                      : theme === 'dark'
+                        ? 'text-white hover:bg-white/10'
+                        : 'text-black hover:bg-black/5'
+                  }`}
+                  onClick={() => setSelectedCategory('This Week')}
                 >
                   This Week
                 </button>
               </div>
               <div className="flex justify-between items-center group">
                 <button
-                  className={`py-2 px-3 rounded-lg transition-all duration-300 flex-grow text-left text-sm ${selectedCategory === 'Completed'
-                      ? 'bg-white/5 font-medium text-black border border-black/50'
-                      : theme === 'dark' ? 'text-gray-300 hover:bg-white/10' : 'text-black hover:bg-black/5'
-                    }`}
-                  onClick={() => setSelectedCategory( 'Completed' )}
+                  className={`py-2 px-3 rounded-lg transition-all duration-300 flex-grow text-left text-sm ${
+                    selectedCategory === 'Completed'
+                      ? theme === 'dark'
+                        ? 'bg-white/10 font-medium text-gray-400 border border-blue-400'
+                        : 'bg-white/5 font-medium text-black border border-black/50'
+                      : theme === 'dark'
+                        ? 'text-white hover:bg-white/10'
+                        : 'text-black hover:bg-black/5'
+                  }`}
+                  onClick={() => setSelectedCategory('Completed')}
                 >
                   Completed
                 </button>
               </div>
 
               {/* User Created Categories */}
-              {userData?.categories.map( ( category, index ) => (
+              {userData?.categories.map((category, index) => (
                 <div key={index} className="flex justify-between items-center group">
                   <button
-                    className={`py-2 px-3 rounded-lg transition-all duration-300 flex-grow text-left text-sm ${selectedCategory === category
-                        ? 'bg-white/5 font-medium text-black border border-black/50'
-                        : theme === 'dark' ? 'text-gray-300 hover:bg-white/10' : 'text-black hover:bg-black/5'
-                      }`}
-                    onClick={() => setSelectedCategory( category )}
+                    className={`py-2 px-3 rounded-lg transition-all duration-300 flex-grow text-left text-sm
+                        ${
+                          selectedCategory === category
+                            ? theme === 'dark'
+                              ? 'bg-white/10 font-medium text-gray-400 border border-blue-400'
+                              : 'bg-white/5 font-medium text-black border border-black/50'
+                            : theme === 'dark'
+                              ? 'text-white hover:bg-white/10'
+                              : 'text-black hover:bg-black/5'
+                        }`}
+                    onClick={() => setSelectedCategory(category)}
                   >
                     {category}
                   </button>
@@ -307,8 +340,8 @@ export default function Home() {
                     <button
                       className="p-1.5 hover:bg-white/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300"
                       onClick={() => {
-                        setSelectedCategoryToEdit( category );
-                        setIsEditCategoryDialogOpen( true );
+                        setSelectedCategoryToEdit(category);
+                        setIsEditCategoryDialogOpen(true);
                       }}
                     >
                       <svg className="w-3.5 h-3.5 text-gray-400 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -318,8 +351,8 @@ export default function Home() {
                     <button
                       className="p-1.5 hover:bg-white/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300"
                       onClick={() => {
-                        setSelectedCategoryToDelete( category );
-                        setIsDeleteCategoryDialogOpen( true );
+                        setSelectedCategoryToDelete(category);
+                        setIsDeleteCategoryDialogOpen(true);
                       }}
                     >
                       <svg className="w-3.5 h-3.5 text-gray-400 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -411,6 +444,16 @@ export default function Home() {
               </div>
               <div className="flex gap-4 justify-end justify-self-end">
                 <button
+                  onClick={() => setIsSessionDialogOpen(true)}
+                  className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-teal-500 text-white px-6 py-3 rounded-xl hover:from-green-600 hover:to-teal-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>Start Session</span>
+                </button>
+                <button
                   onClick={() => setIsTaskDialogOpen( true )}
                   className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0"
                 >
@@ -435,8 +478,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-
-
       {user && (
         <>
           {isTaskInfoDialogOpen && selectedTask && (
@@ -505,7 +546,6 @@ export default function Home() {
               </div>
             </div>
           )}
-
           {/* Edit Task Dialog */}
           {isEditTaskDialogOpen && selectedTask && (
             <EditTaskDialog
@@ -544,6 +584,71 @@ export default function Home() {
             onCategoryDeleted={refreshUserData}
           />
         </>
+      )}
+      {isSessionDialogOpen && (
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className={`${
+              theme === 'dark'
+                ? 'bg-gray-950 border-gray-800 text-white'
+                : 'bg-gray-100 text-black'
+            } rounded-2xl p-8 w-full max-w-xl shadow-xl border`}> {/* Increased max-w-lg to max-w-xl */}
+            <h2 className="text-2xl font-semibold mb-6">Select Task for Session</h2>
+            <div className="max-h-60 overflow-y-auto space-y-1 mb-6 pr-2"> {/* Reduced space-y-2 to space-y-1 */}
+              {allTasks.filter(task => !task.completed).length > 0 ? (
+                allTasks.filter(task => !task.completed).map((task) => (
+                  <div
+                    key={task.id}
+                    onClick={() => setSelectedTaskForSession(task.id)}
+                    className={`flex flex-row justify-between p-2 rounded-lg cursor-pointer transition-all duration-200 border ${ // Reduced padding from p-3 to p-2
+                      selectedTaskForSession === task.id
+                        ? (theme === 'dark' ? 'bg-blue-900/50 border-blue-700' : 'bg-blue-100 border-blue-300')
+                        : (theme === 'dark' ? 'bg-gray-800 border-gray-700 hover:bg-gray-700' : 'bg-white border-gray-200 hover:bg-gray-50')
+                    }`}
+                  >
+                    <span className="font-medium">{task.title}</span>
+                    <span className="text-xs text-gray-500 block"> {/* Changed text-sm to text-xs */}
+                      {task.category} - {task.completedFocusSessions}/{task.focusSessions} sessions
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>No active tasks available.</p>
+              )}
+            </div>
+            <div className="flex justify-end gap-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsSessionDialogOpen(false);
+                  setSelectedTaskForSession(null);
+                }}
+                className={`px-6 py-3 text-base font-medium rounded-xl hover:bg-gray-100 transition-colors ${
+                  theme === 'dark' ? 'text-gray-300 hover:text-gray-100' : 'text-gray-700 hover:text-black'
+                }`}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={!selectedTaskForSession}
+                onClick={() => {
+                  if (selectedTaskForSession) {
+                    router.push(`/session/${selectedTaskForSession}`);
+                    setIsSessionDialogOpen(false);
+                    setSelectedTaskForSession(null);
+                  }
+                }}
+                className={`px-6 py-3 text-base font-medium rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0 ${
+                  !selectedTaskForSession
+                    ? 'bg-gray-500 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-green-500 to-teal-500 text-white hover:from-green-600 hover:to-teal-600'
+                }`}
+              >
+                Start Session
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
