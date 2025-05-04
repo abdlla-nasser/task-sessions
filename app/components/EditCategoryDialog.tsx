@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { doc, updateDoc, arrayRemove, arrayUnion } from 'firebase/firestore';
 import { db } from '../firebase';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface EditCategoryDialogProps {
   isOpen: boolean;
@@ -12,7 +13,8 @@ interface EditCategoryDialogProps {
   onCategoryUpdated: () => void;
 }
 
-export default function EditCategoryDialog({ isOpen, onClose, userId, categoryToEdit, onCategoryUpdated }: EditCategoryDialogProps) {
+export default function EditCategoryDialog({ isOpen, onClose, categoryToEdit, userId, onCategoryUpdated }: EditCategoryDialogProps) {
+  const { theme } = useTheme();
   const [newCategoryName, setNewCategoryName] = useState(categoryToEdit);
 
   if (!isOpen) return null;
@@ -38,16 +40,28 @@ export default function EditCategoryDialog({ isOpen, onClose, userId, categoryTo
 
   return (
     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl transform transition-all">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Edit Category</h2>
+      <div className={`${
+        theme === 'dark'
+          ? 'bg-gray-800 border-gray-700'
+          : 'bg-white'
+      } rounded-2xl p-8 w-full max-w-md shadow-xl border`}>
+        <h2 className={`text-2xl font-semibold mb-6 ${
+          theme === 'dark' ? 'text-white' : 'text-gray-900'
+        }`}>Edit Category</h2>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Category Name</label>
+            <label className={`block text-sm font-medium mb-1 ${
+              theme === 'dark' ? 'text-gray-200' : 'text-black'
+            }`}>Category Name</label>
             <input
               type="text"
               required
-              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900"
+              className={`w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                theme === 'dark'
+                  ? 'bg-gray-700 border-gray-600 text-white'
+                  : 'bg-white border-gray-200 text-black'
+              }`}
               value={newCategoryName}
               onChange={(e) => setNewCategoryName(e.target.value)}
             />

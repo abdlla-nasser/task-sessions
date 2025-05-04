@@ -2,6 +2,7 @@
 
 import { doc, updateDoc, arrayRemove } from 'firebase/firestore';
 import { db } from '../firebase';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface DeleteCategoryDialogProps {
   isOpen: boolean;
@@ -11,7 +12,8 @@ interface DeleteCategoryDialogProps {
   onCategoryDeleted: () => void;
 }
 
-export default function DeleteCategoryDialog({ isOpen, onClose, userId, categoryToDelete, onCategoryDeleted }: DeleteCategoryDialogProps) {
+export default function DeleteCategoryDialog({ isOpen, onClose, categoryToDelete, userId, onCategoryDeleted }: DeleteCategoryDialogProps) {
+  const { theme } = useTheme();
   if (!isOpen) return null;
 
   const handleDelete = async () => {
@@ -30,11 +32,22 @@ export default function DeleteCategoryDialog({ isOpen, onClose, userId, category
 
   return (
     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl transform transition-all">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Delete Category</h2>
-        <p className="text-gray-600 mb-6">Are you sure you want to delete &ldquo;{categoryToDelete}&rdquo;? This action cannot be undone.</p>
+      <div className={`${
+        theme === 'dark'
+          ? 'bg-gray-800 border-gray-700'
+          : 'bg-white'
+      } rounded-2xl p-8 w-full max-w-md shadow-xl border`}>
+        <h2 className={`text-2xl font-semibold mb-6 ${
+          theme === 'dark' ? 'text-white' : 'text-gray-900'
+        }`}>Delete Category</h2>
         
-        <div className="flex justify-end gap-3">
+        <p className={`mb-6 ${
+          theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+        }`}>
+          Are you sure you want to delete the category &quot;{categoryToDelete}&quot;? This action cannot be undone.
+        </p>
+        
+        <div className="flex justify-end gap-4">
           <button
             onClick={onClose}
             className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
