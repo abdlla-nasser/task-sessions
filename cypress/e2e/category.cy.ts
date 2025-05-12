@@ -1,20 +1,17 @@
-describe('Category Management', () => {
-  before(() => {
-    // Visit the app and login once before all tests
-    cy.visit('/auth');
-    cy.get('input[type="email"]').type('test@example.com');
-    cy.get('input[type="password"]').type('password123');
-    cy.contains('button', 'Log In').click();
-    // Wait for redirect to home page
-    cy.url().should('include', '/');
-  });
-});
-
 beforeEach(() => {
   // Just visit the home page before each test
   // This preserves the login state but gives us a fresh UI
-  cy.visit('/');
+  cy.visit('/auth');
+  cy.get('input[type="email"]').type('test@example.com');
+  cy.get('input[type="password"]').type('password123');
+  cy.contains('button', 'Log In').click();
+  // Wait for redirect to home page
+  cy.url().should('include', '/');
+  cy.get('div[aria-label="loading"]').should('not.exist');
 });
+afterEach(() => {
+  cy.get('button[aria-label="sign out"]').click();
+})
 
 it('should create a new category', () => {
   // Click the add category button (+ button next to Projects)

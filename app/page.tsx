@@ -180,7 +180,7 @@ export default function Home() {
 
   if ( loading ) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div aria-label='loading' className="min-h-screen flex items-center justify-center">
         Loading...
       </div>
     );
@@ -467,6 +467,7 @@ export default function Home() {
                   <span>Create Task</span>
                 </button>
                 <button
+                  aria-label='sign out'
                   onClick={handleSignOut}
                   className="flex items-center space-x-2 bg-gradient-to-r from-rose-500 to-pink-600 text-white px-6 py-3 rounded-xl hover:from-rose-600 hover:to-pink-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0"
                 >
