@@ -79,7 +79,7 @@ export default function Auth() {
           <h2 className={`text-2xl font-bold ${
             theme === 'dark' ? 'text-gray-100' : 'text-gray-800'
           }`}>
-            {isLogin ? 'Login' : 'Sign Up'}
+            {isLogin ? 'Log In' : 'Sign Up'}
           </h2>
           
           {/* Theme Toggle Switch with Icons */}
@@ -194,7 +194,7 @@ export default function Auth() {
             type="submit"
             className="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700 transition-colors"
           >
-            {isLogin ? 'Login' : 'Sign Up'}
+            {isLogin ? 'Log In' : 'Sign Up'}
           </button>
         </form>
 

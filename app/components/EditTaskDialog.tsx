@@ -65,6 +65,7 @@ export default function EditTaskDialog({ isOpen, onClose, task, categories, onTa
               theme === 'dark' ? 'text-gray-200' : 'text-black'
             }`}>Title</label>
             <input
+              aria-label='task title'
               type="text"
               required
               className={`w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
@@ -82,6 +83,7 @@ export default function EditTaskDialog({ isOpen, onClose, task, categories, onTa
               Description <span className="text-gray-400">(optional)</span>
             </label>
             <textarea
+              aria-label='task description'
               className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none text-black"
               rows={3}
               value={taskData.description}

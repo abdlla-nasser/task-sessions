@@ -226,6 +226,7 @@ export default function Home() {
               <h2 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-black'
                 }`}>Projects</h2>
               <button
+                aria-label="Add Category"
                 className="p-1.5 hover:bg-white/10 rounded-lg transition-all duration-300 group"
                 onClick={() => setIsCategoryDialogOpen( true )}
               >
@@ -338,6 +339,7 @@ export default function Home() {
                   </button>
                   <div className="flex space-x-1">
                     <button
+                      aria-label='Edit Category'
                       className="p-1.5 hover:bg-white/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300"
                       onClick={() => {
                         setSelectedCategoryToEdit(category);
@@ -349,6 +351,7 @@ export default function Home() {
                       </svg>
                     </button>
                     <button
+                      aria-label='Delete Category'
                       className="p-1.5 hover:bg-white/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300"
                       onClick={() => {
                         setSelectedCategoryToDelete(category);
@@ -405,6 +408,7 @@ export default function Home() {
                     <div className="flex items-center gap-3">
                       <div onClick={( e ) => e.stopPropagation()}>
                         <input
+                          aria-label={`complete ${task.title}`}
                           type="checkbox"
                           checked={task.completed}
                           onChange={( e ) => handleTaskComplete( e, task.id, task.completed )}
