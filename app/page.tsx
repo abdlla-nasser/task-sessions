@@ -6,6 +6,7 @@ import { doc, getDoc, collection, query, where, getDocs, updateDoc, deleteDoc } 
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import TaskDialog from './components/TaskDialog';
+import SessionDialog from './components/SessionDialog'; // Import the new SessionDialog
 import CategoryDialog from './components/CategoryDialog';
 import EditCategoryDialog from './components/EditCategoryDialog';
 import DeleteCategoryDialog from './components/DeleteCategoryDialog';
@@ -47,7 +48,6 @@ export default function Home() {
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState( false );
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState( false );
   const [isSessionDialogOpen, setIsSessionDialogOpen] = useState( false ); // New state for session dialog
-  const [selectedTaskForSession, setSelectedTaskForSession] = useState<string | null>( null ); // New state for selected task ID
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // State for mobile menu
 
   const { theme } = useTheme();
@@ -483,6 +483,11 @@ export default function Home() {
       </div>
       {user && (
         <>
+          <SessionDialog
+            isOpen={isSessionDialogOpen}
+            onClose={() => setIsSessionDialogOpen(false)}
+            tasks={allTasks} // Pass all tasks, the component will filter active ones
+          />
           <TaskInfoDialog
             isOpen={isTaskInfoDialogOpen}
             onClose={() => setIsTaskInfoDialogOpen(false)}
@@ -535,71 +540,6 @@ export default function Home() {
             onCategoryDeleted={refreshUserData}
           />
         </>
-      )}
-      {isSessionDialogOpen && (
-        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className={`${
-              theme === 'dark'
-                ? 'bg-gray-950 border-gray-800 text-white'
-                : 'bg-gray-100 text-black'
-            } rounded-2xl p-8 w-full max-w-xl shadow-xl border`}> {/* Increased max-w-lg to max-w-xl */}
-            <h2 className="text-2xl font-semibold mb-6">Select Task for Session</h2>
-            <div className="max-h-60 overflow-y-auto space-y-1 mb-6 pr-2"> {/* Reduced space-y-2 to space-y-1 */}
-              {allTasks.filter(task => !task.completed).length > 0 ? (
-                allTasks.filter(task => !task.completed).map((task) => (
-                  <div
-                    key={task.id}
-                    onClick={() => setSelectedTaskForSession(task.id)}
-                    className={`flex flex-row justify-between p-2 rounded-lg cursor-pointer transition-all duration-200 border ${ // Reduced padding from p-3 to p-2
-                      selectedTaskForSession === task.id
-                        ? (theme === 'dark' ? 'bg-blue-900/50 border-blue-700' : 'bg-blue-100 border-blue-300')
-                        : (theme === 'dark' ? 'bg-gray-800 border-gray-700 hover:bg-gray-700' : 'bg-white border-gray-200 hover:bg-gray-50')
-                    }`}
-                  >
-                    <span className="font-medium">{task.title}</span>
-                    <span className="text-xs text-gray-500 block"> {/* Changed text-sm to text-xs */}
-                      {task.category} - {task.completedFocusSessions}/{task.focusSessions} sessions
-                    </span>
-                  </div>
-                ))
-              ) : (
-                <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>No active tasks available.</p>
-              )}
-            </div>
-            <div className="flex justify-end gap-4">
-              <button
-                type="button"
-                onClick={() => {
-                  setIsSessionDialogOpen(false);
-                  setSelectedTaskForSession(null);
-                }}
-                className={`px-6 py-3 text-base font-medium rounded-xl hover:bg-gray-100 transition-colors ${
-                  theme === 'dark' ? 'text-gray-300 hover:text-gray-100' : 'text-gray-700 hover:text-black'
-                }`}
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                disabled={!selectedTaskForSession}
-                onClick={() => {
-                  if (selectedTaskForSession) {
-                    router.push(`/session/${selectedTaskForSession}`);
-                    setIsSessionDialogOpen(false);
-                    setSelectedTaskForSession(null);
-                  }
-                }}
-                className={`px-6 py-3 text-base font-medium rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0 ${
-                  !selectedTaskForSession
-                    ? 'bg-gray-500 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-green-500 to-teal-500 text-white hover:from-green-600 hover:to-teal-600'
-                }`}
-              >
-                Start Session
-              </button>
-            </div>
-          </div>
-        </div>
       )}
     </div>
   );
