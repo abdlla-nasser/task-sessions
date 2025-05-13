@@ -10,6 +10,7 @@ import CategoryDialog from './components/CategoryDialog';
 import EditCategoryDialog from './components/EditCategoryDialog';
 import DeleteCategoryDialog from './components/DeleteCategoryDialog';
 import EditTaskDialog from './components/EditTaskDialog';
+import TaskInfoDialog from './components/TaskInfoDialog'; // Import the new component
 import { useTheme } from './contexts/ThemeContext';
 
 interface UserData {
@@ -47,6 +48,7 @@ export default function Home() {
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState( false );
   const [isSessionDialogOpen, setIsSessionDialogOpen] = useState( false ); // New state for session dialog
   const [selectedTaskForSession, setSelectedTaskForSession] = useState<string | null>( null ); // New state for selected task ID
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // State for mobile menu
 
   const { theme } = useTheme();
   const router = useRouter();
@@ -178,6 +180,10 @@ export default function Home() {
     }
   };
 
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
   if ( loading ) {
     return (
       <div aria-label='loading' className="min-h-screen flex items-center justify-center">
@@ -202,16 +208,35 @@ export default function Home() {
         : 'bg-gradient-to-br from-gray-100 to-gray-200'
       }`}>
       <div className="flex flex-row max-w-[1440px] mx-auto gap-[2%] h-full">
-        {/* Side Menu */}
-        <div className={`w-[20%] ${theme === 'dark'
+        {/* Side Menu - Modified for mobile */}
+        <div className={`
+          ${isMobileMenuOpen 
+            ? 'fixed inset-0 z-50 w-full h-full p-4 overflow-y-auto' 
+            : 'hidden md:block md:w-[20%] md:relative md:overflow-y-auto'
+          } 
+          ${theme === 'dark'
             ? 'bg-gradient-to-b from-gray-900 via-gray-950 to-gray-900 text-white'
             : 'bg-gradient-to-b from-gray-200 via-gray-300 to-gray-200 text-black'
-          } rounded-2xl p-[2%] shadow-2xl relative z-10 overflow-y-auto`}>
+          } 
+          rounded-2xl p-[2%] shadow-2xl z-10 flex flex-col
+        `}>
+          {isMobileMenuOpen && (
+            <button
+              aria-label="Close menu"
+              className={`absolute top-4 right-4 p-2 rounded-full ${theme === 'dark' ? 'hover:bg-white/20' : 'hover:bg-black/10'}`}
+              onClick={toggleMobileMenu}
+            >
+              <svg className={`w-6 h-6 ${theme === 'dark' ? 'text-white' : 'text-black'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
           <div className="mb-8">
             <Link
               href="/settings"
               className={`flex items-center space-x-2 py-2 px-3 hover:bg-white/10 rounded-lg transition-all duration-300 group ${theme === 'dark' ? 'text-gray-400' : 'text-black'
                 }`}
+              onClick={() => isMobileMenuOpen && toggleMobileMenu()} // Close menu on navigation
             >
               <svg className={`w-4 h-4 ${theme === 'dark' ? 'text-gray-400 group-hover:text-white' : 'text-black group-hover:text-gray-700'
                 } transition-colors`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -228,7 +253,10 @@ export default function Home() {
               <button
                 aria-label="Add Category"
                 className="p-1.5 hover:bg-white/10 rounded-lg transition-all duration-300 group"
-                onClick={() => setIsCategoryDialogOpen( true )}
+                onClick={() => {
+                  setIsCategoryDialogOpen(true);
+                  if (isMobileMenuOpen) toggleMobileMenu(); // Close menu if open
+                }}
               >
                 <svg className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -238,86 +266,27 @@ export default function Home() {
 
             <div className="space-y-1">
               {/* Default Categories */}
-              <div className="flex justify-between items-center group">
-                <button
-                  className={`py-2 px-3 rounded-lg transition-all duration-300 flex-grow text-left text-sm ${
-                    selectedCategory === 'Inbox'
-                      ? theme === 'dark'
-                        ? 'bg-white/10 font-medium text-gray-400 border border-blue-400'
-                        : 'bg-white/5 font-medium text-black border border-black/50'
-                      : theme === 'dark'
-                        ? 'text-white hover:bg-white/10'
-                        : 'text-black hover:bg-black/5'
-                  }`}
-                  onClick={() => setSelectedCategory('Inbox')}
-                >
-                  Inbox
-                </button>
-              </div>
-              <div className="flex justify-between items-center group">
-                <button
-                  className={`py-2 px-3 rounded-lg transition-all duration-300 flex-grow text-left text-sm ${
-                    selectedCategory === 'Today'
-                      ? theme === 'dark'
-                        ? 'bg-white/10 font-medium text-gray-400 border border-blue-400'
-                        : 'bg-white/5 font-medium text-black border border-black/50'
-                      : theme === 'dark'
-                        ? 'text-white hover:bg-white/10'
-                        : 'text-black hover:bg-black/5'
-                  }`}
-                  onClick={() => setSelectedCategory('Today')}
-                >
-                  Today
-                </button>
-              </div>
-              <div className="flex justify-between items-center group">
-                <button
-                  className={`py-2 px-3 rounded-lg transition-all duration-300 flex-grow text-left text-sm ${
-                    selectedCategory === 'Tomorrow'
-                      ? theme === 'dark'
-                        ? 'bg-white/10 font-medium text-gray-400 border border-blue-400'
-                        : 'bg-white/5 font-medium text-black border border-black/50'
-                      : theme === 'dark'
-                        ? 'text-white hover:bg-white/10'
-                        : 'text-black hover:bg-black/5'
-                  }`}
-                  onClick={() => setSelectedCategory('Tomorrow')}
-                >
-                  Tomorrow
-                </button>
-              </div>
-              <div className="flex justify-between items-center group">
-                <button
-                  className={`py-2 px-3 rounded-lg transition-all duration-300 flex-grow text-left text-sm ${
-                    selectedCategory === 'This Week'
-                      ? theme === 'dark'
-                        ? 'bg-white/10 font-medium text-gray-400 border border-blue-400'
-                        : 'bg-white/5 font-medium text-black border border-black/50'
-                      : theme === 'dark'
-                        ? 'text-white hover:bg-white/10'
-                        : 'text-black hover:bg-black/5'
-                  }`}
-                  onClick={() => setSelectedCategory('This Week')}
-                >
-                  This Week
-                </button>
-              </div>
-              <div className="flex justify-between items-center group">
-                <button
-                  className={`py-2 px-3 rounded-lg transition-all duration-300 flex-grow text-left text-sm ${
-                    selectedCategory === 'Completed'
-                      ? theme === 'dark'
-                        ? 'bg-white/10 font-medium text-gray-400 border border-blue-400'
-                        : 'bg-white/5 font-medium text-black border border-black/50'
-                      : theme === 'dark'
-                        ? 'text-white hover:bg-white/10'
-                        : 'text-black hover:bg-black/5'
-                  }`}
-                  onClick={() => setSelectedCategory('Completed')}
-                >
-                  Completed
-                </button>
-              </div>
+              {['Inbox', 'Today', 'Tomorrow', 'This Week', 'Completed'].map(defaultCategory => (
+                <div key={defaultCategory} className="flex justify-between items-center group">
+                  <button
+                    className={`py-2 px-3 rounded-lg transition-all duration-300 flex-grow text-left text-sm ${
+                      selectedCategory === defaultCategory
+                        ? theme === 'dark'
+                          ? 'bg-white/10 font-medium text-gray-400 border border-blue-400'
+                          : 'bg-white/5 font-medium text-black border border-black/50'
+                        : theme === 'dark'
+                          ? 'text-white hover:bg-white/10'
+                          : 'text-black hover:bg-black/5'
+                    }`}
+                    onClick={() => {
+                      setSelectedCategory(defaultCategory);
+                      if (isMobileMenuOpen) toggleMobileMenu(); // Close menu on selection
+                    }}
+                  >
+                    {defaultCategory}
+                  </button>
+                </div>
+              ))}
 
               {/* User Created Categories */}
               {userData?.categories.map((category, index) => (
@@ -333,7 +302,10 @@ export default function Home() {
                               ? 'text-white hover:bg-white/10'
                               : 'text-black hover:bg-black/5'
                         }`}
-                    onClick={() => setSelectedCategory(category)}
+                    onClick={() => {
+                      setSelectedCategory(category);
+                      if (isMobileMenuOpen) toggleMobileMenu(); // Close menu on selection
+                    }}
                   >
                     {category}
                   </button>
@@ -344,6 +316,7 @@ export default function Home() {
                       onClick={() => {
                         setSelectedCategoryToEdit(category);
                         setIsEditCategoryDialogOpen(true);
+                        if (isMobileMenuOpen) toggleMobileMenu(); // Close menu
                       }}
                     >
                       <svg className="w-3.5 h-3.5 text-gray-400 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -356,6 +329,7 @@ export default function Home() {
                       onClick={() => {
                         setSelectedCategoryToDelete(category);
                         setIsDeleteCategoryDialogOpen(true);
+                        if (isMobileMenuOpen) toggleMobileMenu(); // Close menu
                       }}
                     >
                       <svg className="w-3.5 h-3.5 text-gray-400 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -367,10 +341,32 @@ export default function Home() {
               ) )}
             </div>
           </div>
+          {/* Sign Out Button - Common for Desktop and Mobile Menu */}
+          <div className="mt-auto pt-4 border-t border-gray-600/30 dark:border-gray-500/20">
+            <button
+              aria-label='sign out'
+              onClick={() => {
+                handleSignOut();
+                if (isMobileMenuOpen) {
+                  toggleMobileMenu();
+                }
+              }}
+              className={`w-full flex items-center space-x-2 py-3 px-3 rounded-lg transition-all duration-300 group ${
+                theme === 'dark'
+                  ? 'text-red-400 hover:bg-red-500/10 hover:text-red-300'
+                  : 'text-red-500 hover:bg-red-500/10 hover:text-red-600'
+              }`}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              <span className="text-sm font-medium">Sign Out</span>
+            </button>
+          </div>
         </div>
 
-        {/* Main Content */}
-        <div className="flex flex-col justify-between w-[78%] overflow-y-auto h-full">
+        {/* Main Content - Modified for mobile */}
+        <div className="flex flex-col justify-between w-full md:w-[78%] overflow-y-auto h-full">
           <div className={`${theme === 'dark'
               ? 'bg-gray-800/80 backdrop-blur-xl border-gray-700/20'
               : 'bg-white/80 backdrop-blur-xl border-white/20'
@@ -381,7 +377,16 @@ export default function Home() {
               } rounded-2xl`}></div>
             <div className="relative h-full flex flex-col justify-between">
               <div>
-              <div className="mb-8">
+              <div className="mb-8 flex items-center"> {/* Flex container for hamburger and title */}
+                <button
+                  aria-label="Open menu"
+                  className={`md:hidden mr-3 p-2 rounded-lg ${theme === 'dark' ? 'hover:bg-white/10' : 'hover:bg-black/5'}`}
+                  onClick={toggleMobileMenu}
+                >
+                  <svg className={`w-6 h-6 ${theme === 'dark' ? 'text-white' : 'text-black'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                </button>
                 <div>
                   <h1 className={`text-3xl font-bold tracking-tight ${theme === 'dark'
                       ? 'bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent'
@@ -391,7 +396,7 @@ export default function Home() {
                   </h1>
                 </div>
               </div>
-              {/* Tasks List */}
+              {/* Tasks List - Modified for mobile */}
               <div className="space-y-1">
                 {filteredTasks.map( ( task ) => (
                   <div
@@ -423,12 +428,14 @@ export default function Home() {
                             }`}>
                             {task.title}
                           </h3>
-                          <span className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-black'}`}>
+                          {/* Hide due date on mobile */}
+                          <span className={`text-xs hidden md:inline ${theme === 'dark' ? 'text-gray-400' : 'text-black'}`}>
                             {new Date( task.dueDate ).toISOString().split( 'T' )[0].replace( /-/g, '/' )}
                           </span>
                         </div>
                         <div className="flex items-center gap-2 mt-0.5">
-                          <span className={`${theme === 'dark'
+                          {/* Hide category on mobile */}
+                          <span className={`hidden md:inline ${theme === 'dark'
                               ? 'bg-blue-900/50 text-blue-300'
                               : 'bg-blue-50 text-blue-700'
                             } px-1.5 py-0.5 rounded-full text-xs`}>
@@ -446,12 +453,12 @@ export default function Home() {
                 ) )}
               </div>
               </div>
-              <div className="flex gap-4 justify-end justify-self-end">
+              {/* Action Buttons - smaller on mobile */}
+              <div className="flex flex-wrap gap-2 md:gap-4 justify-end mt-4 md:mt-0">
                 <button
                   onClick={() => setIsSessionDialogOpen(true)}
-                  className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-teal-500 text-white px-6 py-3 rounded-xl hover:from-green-600 hover:to-teal-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  className="flex items-center space-x-1 md:space-x-2 bg-gradient-to-r from-green-500 to-teal-500 text-white px-4 py-2 text-sm md:px-6 md:py-3 md:text-base rounded-lg md:rounded-xl hover:from-green-600 hover:to-teal-600 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 active:translate-y-0"                >
+                  <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
@@ -459,23 +466,14 @@ export default function Home() {
                 </button>
                 <button
                   onClick={() => setIsTaskDialogOpen( true )}
-                  className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0"
+                  className="flex items-center space-x-1 md:space-x-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 text-sm md:px-6 md:py-3 md:text-base rounded-lg md:rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 active:translate-y-0"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                   </svg>
                   <span>Create Task</span>
                 </button>
-                <button
-                  aria-label='sign out'
-                  onClick={handleSignOut}
-                  className="flex items-center space-x-2 bg-gradient-to-r from-rose-500 to-pink-600 text-white px-6 py-3 rounded-xl hover:from-rose-600 hover:to-pink-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                  </svg>
-                  <span>Sign Out</span>
-                </button>
+
               </div>
             </div>
           </div>
@@ -485,72 +483,20 @@ export default function Home() {
       </div>
       {user && (
         <>
-          {isTaskInfoDialogOpen && selectedTask && (
-            <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-              <div className="bg-white rounded-2xl p-8 w-full max-w-2xl shadow-xl"> {/* Increased max-w-md to max-w-2xl and p-6 to p-8 */}
-                <h2 className="text-2xl font-bold mb-6 text-black">{selectedTask.title}</h2> {/* Increased text-xl to text-2xl and mb-4 to mb-6 */}
-                <p className="text-lg text-black mb-6">{selectedTask.description}</p> {/* Added text-lg and increased mb-4 to mb-6 */}
-
-                <div className="space-y-3 mb-6"> {/* Increased space-y-2 to space-y-3 and mb-4 to mb-6 */}
-                  <div className="flex justify-between">
-                    <span className="text-black">Category:</span>
-                    <span className="font-medium text-black">{selectedTask.category}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-black">Due Date:</span>
-                    <span className="font-medium text-black">
-                      {new Date( selectedTask.dueDate ).toISOString().split( 'T' )[0].replace( /-/g, '/' )}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-black">Focus Sessions:</span>
-                    <span className="font-medium text-black">{selectedTask.completedFocusSessions}/{selectedTask.focusSessions}</span>
-                  </div>
-                  {selectedTask.completed && selectedTask.completedOn && (
-                    <div className="flex justify-between">
-                      <span className="text-black">Completed On:</span>
-                      <span className="font-medium text-black">
-                        {new Date( selectedTask.completedOn ).toISOString().split( 'T' )[0].replace( /-/g, '/' )}
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex justify-end gap-4"> {/* Increased gap-3 to gap-4 */}
-                  <button
-                    onClick={() => setIsTaskInfoDialogOpen( false )}
-                    className="px-6 py-3 text-base font-medium text-gray-600 hover:text-gray-900 transition-colors rounded-xl hover:bg-gray-100" /* Enhanced button styling */
-                  >
-                    Close
-                  </button>
-                  <button
-                    onClick={() => {
-                      setIsEditTaskDialogOpen( true );
-                      setIsTaskInfoDialogOpen( false );
-                    }}
-                    className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-base font-medium rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0" /* Enhanced gradient and hover effects */
-                  >
-                    Edit Task
-                  </button>
-                  <button
-                    onClick={() => handleTaskDelete( selectedTask.id )}
-                    className="px-6 py-3 bg-gradient-to-r from-rose-500 to-pink-600 text-white text-base font-medium rounded-xl hover:from-rose-600 hover:to-pink-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0"
-                  >
-                    Delete
-                  </button>
-                  <button
-                    onClick={() => {
-                      router.push( `/session/${selectedTask.id}` );
-                      setIsTaskInfoDialogOpen( false );
-                    }}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                  >
-                    Start Focus Session
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+          <TaskInfoDialog
+            isOpen={isTaskInfoDialogOpen}
+            onClose={() => setIsTaskInfoDialogOpen(false)}
+            task={selectedTask}
+            onEdit={() => {
+              setIsEditTaskDialogOpen(true);
+              setIsTaskInfoDialogOpen(false); // Close info dialog when opening edit
+            }}
+            onDelete={handleTaskDelete} // Pass the existing delete handler
+            onStartSession={(taskId) => {
+              router.push(`/session/${taskId}`);
+              setIsTaskInfoDialogOpen(false); // Close info dialog
+            }}
+          />
           {/* Edit Task Dialog */}
           {isEditTaskDialogOpen && selectedTask && (
             <EditTaskDialog
